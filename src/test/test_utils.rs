@@ -10,7 +10,7 @@ use std::io::{PipeReader, PipeWriter, Write};
 use std::marker::PhantomData;
 use std::os::fd::IntoRawFd as _;
 use std::sync::mpsc;
-use std::time::{Duration, SystemTime};
+use std::time::{Duration, Instant, SystemTime};
 use std::{fmt, thread};
 
 use linux_api::sched::{CloneFlags, CloneResult, clone_args};
@@ -75,10 +75,12 @@ where
     I: IntoIterator<Item = &'a ShadowTest<T, E>>,
     E: 'a + std::fmt::Debug + std::fmt::Display,
 {
+    let start = Instant::now();
+
     let mut results = vec![];
 
     for test in tests {
-        print!("Testing {}...", test.name());
+        print!("{}s: Testing {}...", start.elapsed().as_secs(), test.name());
         std::io::stdout().flush().unwrap();
 
         match test.run() {

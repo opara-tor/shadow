@@ -12,6 +12,8 @@ FLAGS+=("-j$(nproc)")
 # example tests that require additional dependencies).
 FLAGS+=("--extra")
 
+FLAGS+=("epoll-edge-rs-linux")
+
 # Following flags passed through to ctest
 FLAGS+=("--")
 
@@ -21,5 +23,6 @@ FLAGS+=("--")
 FLAGS+=("--label-exclude" "tgen|tor|example|flaky")
 
 FLAGS+=("--output-on-failure")
+FLAGS+=("--timeout" "120")
 
 ./setup test "${FLAGS[@]}"
