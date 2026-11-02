@@ -11,6 +11,7 @@ defaults:
 on:
   pull_request:
     types: [opened, synchronize]
+  push:
 
 env:
   CARGO_TERM_COLOR: always
@@ -149,11 +150,10 @@ jobs:
       - name: Test
         run: . ci/container_scripts/test.sh
 
-      - name: Compress logs
+      - name: Compress simulation logs
         if: failure()
         run: |
           shopt -s globstar
-          tar -cJf build/Testing/Temporary{.tar.xz,/}
           for f in build/**/*.data; do tar -cJf "$f.tar.xz" "$f/"; done
 
       - name: Upload shadow data directories
@@ -162,6 +162,12 @@ jobs:
         with:
           name: shadow-data-dirs
           path: build/**/*.data.tar.xz
+
+      - name: Compress shadow logs
+        if: failure()
+        run: |
+          shopt -s globstar
+          tar -c -I 'xz -3 -T0' -f build/Testing/Temporary{.tar.xz,/}
 
       - name: Upload shadow log file
         uses: actions/upload-artifact@v7
